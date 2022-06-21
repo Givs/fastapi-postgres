@@ -9,10 +9,12 @@ class jwtBearer(HTTPBearer):
 
     async def __call__(self, request: Request):
         credentials: HTTPAuthorizationCredentials = await super(jwtBearer,self).__call__(request)
+        request_method = request.method
+        request_route = request.url.components.path
         if credentials:
             if not credentials.scheme == "Bearer":
                 raise HTTPException(status_code = 403, detail="Inválid or Expired Token!")
-            permition = self.verify_jwt(credentials.credentials)
+            permition = self.verify_jwt(credentials.credentials, request_method, request_route)
             if not permition:
                 raise HTTPException(status_code = 403, detail="Inválid or Expired Token!")
             return credentials.credentials
@@ -20,10 +22,9 @@ class jwtBearer(HTTPBearer):
             raise HTTPException(status_code=403, detail="Inválid or Expired Token!")
 
 
-    def verify_jwt(self, jwtoken):
+    def verify_jwt(self, jwtoken, request_method, request_route):
         isTokenValid = False
-        payload = decodeJWT(jwtoken)
+        payload = decodeJWT(jwtoken, request_method, request_route)
         if payload:
             isTokenValid = True
         return isTokenValid
-
