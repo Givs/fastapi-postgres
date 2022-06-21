@@ -1,6 +1,10 @@
 from fastapi import FastAPI, status, HTTPException, Body, Depends
 from pydantic import BaseModel
 from typing import Optional, List
+from email_validator import validate_email, EmailNotValidError
+
+from pydantic.networks import EmailStr
+
 from database import SessionLocal
 from auth.jwt_handler import signJWT
 from auth.jwt_bearer import jwtBearer
@@ -20,7 +24,7 @@ class UserLogin(BaseModel):
 
 
 class User(BaseModel):
-    id: int
+    id: int = None
     name: str
     email: str
     password: str
@@ -51,12 +55,18 @@ def get_all_users():
 @app.post('/users', response_model=User, status_code=status.HTTP_201_CREATED, tags=["user"])
 def create_user(user: User):
     user.password = generate_hash(user.password)
+    try:
+        validEmail = validate_email(user.email).email
+    except EmailNotValidError as e:
+        raise HTTPException(status_code=510, detail="Email format is incorect")
+
     new_user = models.User(
         name=user.name,
         email=user.email,
         password=user.password,
         office=user.office
     )
+
 
     db_user = db.query(models.User).filter_by(email=new_user.email).count()
 

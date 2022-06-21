@@ -1,0 +1,8 @@
+.env
+.idea/
+__pycache__/
+env/
+requirements.txt
+
+auth/__pycache__/jwt_bearer.cpython-38.pyc
+auth/__pycache__/jwt_handler.cpython-38.pyc
