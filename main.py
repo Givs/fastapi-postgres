@@ -1,9 +1,13 @@
-from fastapi import FastAPI, status, HTTPException, Body, Depends
+
+from fastapi import FastAPI, Request, status, HTTPException, Body, Depends
 from pydantic import BaseModel
 from typing import Optional, List
 from email_validator import validate_email, EmailNotValidError
 from sqlalchemy import or_
 
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 from pydantic.networks import EmailStr
 
@@ -14,8 +18,10 @@ from auth.hash_provider import generate_hash, verify_hash
 
 import models
 
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
-
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 class UserLogin(BaseModel):
     email: str
@@ -58,7 +64,8 @@ db = SessionLocal()
 
 
 @app.get('/users', dependencies=[Depends(jwtBearer())], response_model=List[User], status_code=200)
-def get_all_users():
+@limiter.limit("1/minute")
+async def get_all_users(request: Request):
     users = db.query(models.User).all()
 
     return users
