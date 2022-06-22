@@ -61,6 +61,14 @@ def get_all_users():
 
     return users
 
+@app.get('/users/{user_id}', dependencies=[Depends(jwtBearer())], response_model=User, status_code=200)
+def get_an_users(user_id: int):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user
 
 @app.post('/users', response_model=User, status_code=status.HTTP_201_CREATED, tags=["user"])
 def create_user(user: User):
@@ -89,7 +97,6 @@ def create_user(user: User):
         db.commit()
         return new_user
 
-
 def check_user(data: UserLogin):
     query = db.query(models.User).filter(models.User.email == data.email).all()
     if len(query) == 1:
@@ -100,7 +107,6 @@ def check_user(data: UserLogin):
     else:
         return False
 
-
 @app.post("/users/login", tags=["user"])
 def user_login(user: UserLogin = Body(default=None)):
     if check_user(user):
@@ -108,6 +114,8 @@ def user_login(user: UserLogin = Body(default=None)):
         return signJWT(user.email, get_user_office[0].office)
     else:
         raise HTTPException(status_code=401, detail="Invalid Email or password")
+
+
 
 @app.post("/authors", dependencies=[Depends(jwtBearer())], response_model=Author, status_code=status.HTTP_201_CREATED, tags=["author"])
 def create_author(author: Author):
@@ -119,12 +127,45 @@ def create_author(author: Author):
     db.commit()
     return new_author
 
-
 @app.get('/authors', dependencies=[Depends(jwtBearer())], response_model=List[Author], status_code=200)
 def get_all_authors():
     authors = db.query(models.Author).all()
 
     return authors
+
+@app.get('/authors/{author_id}', dependencies=[Depends(jwtBearer())], response_model=Author, status_code=200)
+def get_an_author(author_id: int):
+    author = db.query(models.Author).filter(models.Author.id == author_id).first()
+
+    if not author:
+        raise HTTPException(status_code=404, detail="Author not found")
+
+    return author
+
+@app.patch('/authors/{author_id}', dependencies=[Depends(jwtBearer())], response_model=Author, status_code=200)
+def update_an_author(author_id: int, author: Author):
+    author_to_update = db.query(models.Author).filter(models.Author.id == author_id).first()
+
+    if not author_to_update:
+        raise HTTPException(status_code=404, detail="Author not found")
+
+    author_to_update.name = author.name
+
+    db.commit()
+
+    return author_to_update
+
+@app.delete('/authors/{author_id}', dependencies=[Depends(jwtBearer())], response_model=Author, status_code=200)
+def delete_an_author(author_id: int):
+    author_to_delete = db.query(models.Author).filter(models.Author.id == author_id).first()
+
+    if not author_to_delete:
+        raise HTTPException(status_code=404, detail="Author not found")
+
+    db.delete(author_to_delete)
+    db.commit()
+    return author_to_delete
+
 
 
 @app.post("/papers", dependencies=[Depends(jwtBearer())], response_model=Paper, status_code=status.HTTP_201_CREATED, tags=["paper"])
@@ -137,7 +178,7 @@ def create_paper(paper: Paper):
 
     find_author_id = db.query(models.Author).filter(models.User.id == paper.author_id).count()
     if not find_author_id:
-        raise HTTPException(status_code=404, detail="Author doesn't exist.")
+        raise HTTPException(status_code=404, detail="Author not found.")
 
     db.add(new_paper)
     db.commit()
@@ -149,3 +190,41 @@ def get_all_papers():
 
     return papers
 
+@app.get('/papers/{paper_id}', dependencies=[Depends(jwtBearer())], response_model=Paper, status_code=200)
+def get_a_paper(paper_id: int):
+    paper = db.query(models.Paper).filter(models.Paper.id == paper_id).first()
+
+    if not paper:
+        raise HTTPException(status_code=404, detail="Paper not found")
+
+    return paper
+
+@app.patch('/papers/{paper_id}', dependencies=[Depends(jwtBearer())], response_model=Paper, status_code=200)
+def update_a_paper(paper_id: int, paper: Paper):
+    paper_to_update = db.query(models.Paper).filter(models.Paper.id == paper_id).first()
+
+    find_author_id = db.query(models.Author).filter(models.User.id == paper.author_id).count()
+    if not find_author_id:
+        raise HTTPException(status_code=404, detail="Author not found.")
+
+    if not paper_to_update:
+        raise HTTPException(status_code=404, detail="Paper not found")
+
+    paper_to_update.author_id = paper.author_id
+    paper_to_update.title = paper.title
+    paper_to_update.sumary = paper.sumary
+
+    db.commit()
+
+    return paper_to_update
+
+@app.delete('/papers/{paper_id}', dependencies=[Depends(jwtBearer())], response_model=Paper, status_code=200)
+def delete_a_paper(paper_id: int):
+    paper_to_delete = db.query(models.Paper).filter(models.Paper.id == paper_id).first()
+
+    if not paper_to_delete:
+        raise HTTPException(status_code=404, detail="Paper not found")
+
+    db.delete(paper_to_delete)
+    db.commit()
+    return paper_to_delete
