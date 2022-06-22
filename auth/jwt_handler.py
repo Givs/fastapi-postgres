@@ -34,7 +34,7 @@ def signJWT(userID: str, userOffice: str):
 def decodeJWT(token: str, request_method, request_route):
     #TODO tirar essa verificação de rotas admin daqui
     admin_routes = ['/authors', '/papers']
-    admin_methods = ['POST', 'PATH']
+    admin_methods = ['POST', 'PATH', 'DELETE']
     try:
         decode_token = jwt.decode(token, JWT_SECRET, algorithm=JWT_ALGORITHM)
         if decode_token:
