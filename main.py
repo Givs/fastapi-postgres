@@ -2,6 +2,8 @@ from fastapi import FastAPI, status, HTTPException, Body, Depends
 from pydantic import BaseModel
 from typing import Optional, List
 from email_validator import validate_email, EmailNotValidError
+from sqlalchemy import or_
+
 
 from pydantic.networks import EmailStr
 
@@ -127,9 +129,16 @@ def create_author(author: Author):
     db.commit()
     return new_author
 
+
 @app.get('/authors', dependencies=[Depends(jwtBearer())], response_model=List[Author], status_code=200)
-def get_all_authors():
-    authors = db.query(models.Author).all()
+def get_all_authors(term: str = None):
+    if term:
+        term = term.replace("'", '')
+        authors = db.query(models.Author).filter(models.Author.name.like("%" + term + "%")).all()
+        if not authors:
+            raise HTTPException(status_code=404, detail="Authors not found with this term :( Try another one!")
+    else:
+        authors = db.query(models.Author).all()
 
     return authors
 
@@ -185,8 +194,14 @@ def create_paper(paper: Paper):
     return new_paper
 
 @app.get('/papers', dependencies=[Depends(jwtBearer())], response_model=List[Paper], status_code=200)
-def get_all_papers():
-    papers = db.query(models.Paper).all()
+def get_all_papers(term: str = None):
+    if term:
+        term = term.replace("'", '')
+        papers = db.query(models.Paper).filter(or_(models.Paper.sumary.like("%" + term + "%"), models.Paper.title.like("%" + term + "%"))).all()
+        if not papers:
+            raise HTTPException(status_code=404, detail="Papers not found with this term :( Try another one!")
+    else:
+        papers = db.query(models.Paper).all()
 
     return papers
 
@@ -228,3 +243,4 @@ def delete_a_paper(paper_id: int):
     db.delete(paper_to_delete)
     db.commit()
     return paper_to_delete
+
