@@ -2,7 +2,6 @@
 
 # set expiration limit for the tokens
 import time
-from fastapi import FastAPI, status, HTTPException, Body, Depends
 
 # resposible for encondig and decogind generated token
 import jwt
@@ -12,6 +11,9 @@ from decouple import config
 
 JWT_SECRET = config("secret")
 JWT_ALGORITHM = config("algorithm")
+
+#User can be logged in for 20 minutes
+ACCESS_TOKEN_EXPIRE_SECONDS = 1200
 
 
 # function returns generated token
@@ -24,7 +26,7 @@ def token_reponse(token: str):
 def signJWT(userID: str, userOffice: str):
     payload = {
         "userID": userID,
-        "expiry": time.time() + 600,
+        "expiry": time.time() + ACCESS_TOKEN_EXPIRE_SECONDS,
         "userOffice": userOffice
     }
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
@@ -33,7 +35,7 @@ def signJWT(userID: str, userOffice: str):
 
 def decodeJWT(token: str, request_method, request_route):
     #TODO tirar essa verificação de rotas admin daqui
-    admin_routes = ['/authors', '/papers']
+    admin_routes = ['/authors/', '/papers/']
     admin_methods = ['POST', 'PATH', 'DELETE']
     try:
         decode_token = jwt.decode(token, JWT_SECRET, algorithm=JWT_ALGORITHM)
