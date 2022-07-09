@@ -22,7 +22,7 @@ def email_validation(user):
     try:
         validate_email(user.email).email
     except EmailNotValidError as e:
-        error_instance(510, e.args[0])
+        error_instance(510, str(e))
 
 
 def password_validation(password: str):

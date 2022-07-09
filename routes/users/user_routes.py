@@ -5,7 +5,8 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from auth.jwt_bearer import jwtBearer
-from schemas.all_schemas import UserLogin, User, UserLogout
+from auth.jwt_handler import get_expiry_token
+from schemas.all_schemas import UserLogin, User
 from routes.users.user_logic import get_all_users, get_an_users, user_login, create_user
 
 
@@ -48,5 +49,13 @@ def post_login(request: Request, user: UserLogin = Body(default=None)):
     access_token = user_login(user)
 
     return access_token
+
+
+@router.get('/expiry/token', tags=["user"], dependencies=[Depends(jwtBearer())])
+@limiter.limit("60/minute")
+async def get(request: Request):
+    expiry_time = get_expiry_token(request)
+
+    return expiry_time
 
 
