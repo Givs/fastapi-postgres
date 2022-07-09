@@ -18,7 +18,7 @@ class User(Base):
 class Author(Base):
     __tablename__ = 'authors'
     id = Column(Integer, primary_key=True)
-    name = Column(String(255), nullable=False, unique=True)
+    name = Column(String(255), nullable=False)
     paper = relationship("Paper", back_populates="owner")
 
     def __repr__(self):
