@@ -4,10 +4,10 @@ from typing import List
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from auth.jwt_bearer import jwtBearer
-from auth.jwt_handler import get_expiry_token
-from schemas.all_schemas import UserLogin, User
-from routes.users.user_logic import get_all_users, get_an_users, user_login, create_user
+from src.auth.jwt_bearer import jwtBearer
+from src.auth.jwt_handler import get_expiry_token
+from src.schemas.all_schemas import UserLogin, User
+from src.routes.users.user_logic import get_all_users, get_an_users, user_login, create_user
 
 
 limiter = Limiter(key_func=get_remote_address)

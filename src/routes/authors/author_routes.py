@@ -4,10 +4,10 @@ from typing import List
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from database import SessionLocal
-from auth.jwt_bearer import jwtBearer
-from schemas.all_schemas import Author
-from routes.authors.author_logic import create_author, search_author, get_an_author, update_author, delete_author
+from src.database.database import SessionLocal
+from src.auth.jwt_bearer import jwtBearer
+from src.schemas.all_schemas import Author
+from src.routes.authors.author_logic import create_author, search_author, get_an_author, update_author, delete_author
 
 
 limiter = Limiter(key_func=get_remote_address, default_limits=["1/minute"])

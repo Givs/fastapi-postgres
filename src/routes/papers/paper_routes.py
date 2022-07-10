@@ -1,22 +1,14 @@
 from fastapi import FastAPI, Request, status, HTTPException, Body, Depends, APIRouter
-from typing import Optional, List
-from email_validator import validate_email, EmailNotValidError
-from sqlalchemy import or_
+from typing import List
 
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import Limiter
 from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
 
-from database import SessionLocal
-from auth.jwt_handler import signJWT
-from auth.jwt_bearer import jwtBearer
-from auth.hash_provider import generate_hash, verify_hash
-from validations.validations_for_create_user import office_validation
-from schemas.all_schemas import UserLogin, User, Author, Paper
-from routes.papers.paper_logic import create_paper, get_and_search_papers, get_a_paper, update_paper, delete_paper
+from src.database.database import SessionLocal
+from src.auth.jwt_bearer import jwtBearer
+from src.schemas.all_schemas import Paper
+from src.routes.papers.paper_logic import create_paper, get_and_search_papers, get_a_paper, update_paper, delete_paper
 
-
-import models
 
 limiter = Limiter(key_func=get_remote_address)
 

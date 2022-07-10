@@ -1,7 +1,7 @@
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from .jwt_handler import verify_token
-from errors.error_instance import error_instance
+from src.errors.error_instance import error_instance
 
 class jwtBearer(HTTPBearer):
     def __int__(self, auto_Error=True):
