@@ -1,4 +1,4 @@
-from errors.error_instance import error_instance
+from src.errors.error_instance import error_instance
 from email_validator import validate_email, EmailNotValidError
 from password_validator import PasswordValidator
 
@@ -10,10 +10,9 @@ password_instance.has().lowercase()
 
 
 def office_validation(office: str):
-    text_to_pattern = office.capitalize()
     possible_offices = ['Default', 'Admin']
 
-    if text_to_pattern not in possible_offices:
+    if office not in possible_offices:
         error_instance(510, "Office can be only Default or Admin")
     return
 

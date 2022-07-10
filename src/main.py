@@ -4,12 +4,14 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from database.database import SessionLocal
+
+import uvicorn
+from src.database.database import SessionLocal
 
 
-from routes.users import user_routes
-from routes.authors import author_routes
-from routes.papers import paper_routes
+from src.routes.users import user_routes
+from src.routes.authors import author_routes
+from src.routes.papers import paper_routes
 
 
 limiter = Limiter(key_func=get_remote_address)
@@ -27,7 +29,8 @@ router.include_router(paper_routes.router)
 app.include_router(router)
 
 
-
+if __name__ == "__main__":
+    uvicorn.run("main:app", host='127.0.0.1', port=8000, reload=True)
 
 
 

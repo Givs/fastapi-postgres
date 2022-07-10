@@ -47,6 +47,7 @@ def user_login(user: UserLogin = Body(default=None)):
 
 def create_user(user: User):
     password_validation(user.password)
+    user.office = user.office.capitalize()
     office_validation(user.office)
     email_validation(user)
 
