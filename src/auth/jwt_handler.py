@@ -70,7 +70,7 @@ def verify_minutes(minutes):
 
 
 def personalize_message(life_time_in_minutes, is_minute_singular_or_plural):
-    message = 'Your token will expiry in less than 1 minute.' if life_time_in_minutes < 0 \
+    message = 'Your token will expiry in less than 1 minute.' if life_time_in_minutes == 0 \
               else f'Your token will expire in {life_time_in_minutes} minute{is_minute_singular_or_plural}.'
 
     return {'message': message}

@@ -1,4 +1,4 @@
-from fastapi import Request, status, Body, Depends, APIRouter
+from fastapi import Request, status, Body, Depends, APIRouter, Response
 from typing import List
 
 from slowapi import Limiter
@@ -22,7 +22,9 @@ router = APIRouter(
 
 @router.get('/', dependencies=[Depends(jwtBearer())], response_model=List[User], status_code=200)
 @limiter.limit("60/minute")
-async def get(request: Request):
+async def get(request: Request, response: Response):
+    expiry_time = get_expiry_token(request)
+    response.headers["expiry-time"] = expiry_time['message']
     users = get_all_users()
 
     return users
@@ -30,7 +32,9 @@ async def get(request: Request):
 
 @router.get('/{user_id}', dependencies=[Depends(jwtBearer())], response_model=User, status_code=200)
 @limiter.limit("60/minute")
-def get_user(user_id: int, request: Request):
+def get_user(user_id: int, request: Request, response: Response):
+    expiry_time = get_expiry_token(request)
+    response.headers["expiry-time"] = expiry_time['message']
     user = get_an_users(user_id)
 
     return user
@@ -54,7 +58,9 @@ def post_login(request: Request, user: UserLogin = Body(default=None)):
 
 @router.get('/expiry/token', tags=["user"], dependencies=[Depends(jwtBearer())])
 @limiter.limit("60/minute")
-async def get(request: Request):
+async def get(request: Request, response: Response):
+    expiry_time = get_expiry_token(request)
+    response.headers["expiry-time"] = expiry_time['message']
     expiry_time = get_expiry_token(request)
 
     return expiry_time
