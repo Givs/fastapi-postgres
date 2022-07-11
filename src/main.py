@@ -12,7 +12,7 @@ from src.database.database import SessionLocal
 from src.routes.users import user_routes
 from src.routes.authors import author_routes
 from src.routes.papers import paper_routes
-
+from src.routes.api_up import api_up
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
@@ -25,6 +25,7 @@ router = APIRouter()
 router.include_router(user_routes.router)
 router.include_router(author_routes.router)
 router.include_router(paper_routes.router)
+router.include_router(api_up.router)
 
 app.include_router(router)
 
