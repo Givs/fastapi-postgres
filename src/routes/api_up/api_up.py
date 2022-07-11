@@ -1,9 +1,10 @@
-from fastapi import FastAPI, Request, status, HTTPException, Body, Depends, APIRouter
+from fastapi import Request, APIRouter
 
 
 router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
+
 
 @router.get('/')
 def get(request: Request):

@@ -5,6 +5,7 @@ import time
 import datetime
 # resposible for encondig and decogind generated token
 import jwt
+import re
 
 # organize settings
 from decouple import config
@@ -42,6 +43,7 @@ def decode_jwt(token: str):
 
 
 def verify_user_office_can_access_endpoint(office, request_method, request_route):
+    request_route = re.sub(r'[0-9]+', '', request_route)
     ADMIN_ROUTES = ['/authors/', '/papers/']
     ADMIN_METHODS = ['POST', 'PATH', 'DELETE']
 

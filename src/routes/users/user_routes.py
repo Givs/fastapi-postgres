@@ -40,6 +40,7 @@ def get_user(user_id: int, request: Request):
 @limiter.limit("60/minute")
 def post(request: Request, user: User):
     new_user = create_user(user)
+
     return new_user
 
 
