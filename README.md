@@ -59,5 +59,5 @@ you can go to /docs
 
 # Using Insomnia 
 [Install Insomnia](https://docs.insomnia.rest/insomnia/install)
-<h4>You can download [this file](https://mega.nz/file/YpJExDaY#QHQG373fMcM9727mijEeW-lFga-gjF4Q84UZexClY8s) and import in your insomnia. Contains all endpoints and
-methods already setup to test requests and responses.</h4>
+You can download [this file](https://mega.nz/file/YpJExDaY#QHQG373fMcM9727mijEeW-lFga-gjF4Q84UZexClY8s) and import in your insomnia. Contains all endpoints and
+methods already setup to test requests and responses
